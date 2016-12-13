@@ -11,25 +11,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# [START sentiment_tutorial]
 """Demonstrates how to make a simple call to the Natural Language API."""
 
+# [START sentiment_tutorial_import]
 import argparse
 
 from google.cloud import language
+# [END sentiment_tutorial_import]
 
-
-def main(movie_review_filename):
-    """Run a sentiment analysis request on text within a passed filename."""
-    language_client = language.Client()
-
-    with open(movie_review_filename, 'r') as review_file:
-        # Instantiates a plain text document.
-        document = language_client.document_from_html(review_file.read())
-
-        # Detects sentiment in the document.
-        annotations = document.annotate_text(include_sentiment=True,
-            include_syntax=False, include_entities=False)
-
+def print_result(annotations):
     score = annotations.sentiment.score
     magnitude = annotations.sentiment.magnitude
 
@@ -47,6 +38,19 @@ def main(movie_review_filename):
     return 0
 
 
+def analyze(movie_review_filename):
+    """Run a sentiment analysis request on text within a passed filename."""
+    language_client = language.Client()
+
+    with open(movie_review_filename, 'r') as review_file:
+        # Instantiates a plain text document.
+        document = language_client.document_from_html(review_file.read())
+
+        # Detects sentiment in the document.
+        return document.annotate_text(include_sentiment=True,
+            include_syntax=False, include_entities=False)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -55,4 +59,8 @@ if __name__ == '__main__':
         'movie_review_filename',
         help='The filename of the movie review you\'d like to analyze.')
     args = parser.parse_args()
-    main(args.movie_review_filename)
+    # Perform the analysis
+    annotations = analyze(args.movie_review_filename)
+    # Print the results
+    print_result(annotations)
+# [END sentiment_tutorial]
